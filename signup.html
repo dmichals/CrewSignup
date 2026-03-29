@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sailing with Attitude — 2025 Crew Signup</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f6f9;min-height:100vh;padding:16px;}
+.card{max-width:420px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.header{background:#185FA5;padding:18px 20px 14px;}
+.header h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:4px;}
+.header p{font-size:13px;color:#B5D4F4;}
+.section{padding:16px 20px;border-bottom:1px solid #f0f0f0;}
+.section:last-child{border-bottom:none;}
+.lbl{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.name-tabs{display:flex;border:1px solid #ddd;border-radius:8px;overflow:hidden;margin-bottom:10px;}
+.name-tab{flex:1;padding:8px;font-size:13px;text-align:center;cursor:pointer;background:transparent;border:none;color:#888;}
+.name-tab.active{background:#185FA5;color:#fff;font-weight:600;}
+select,input[type=text],input[type=email],textarea{width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;color:#222;background:#fff;font-family:inherit;}
+textarea{resize:none;}
+.hint{font-size:11px;color:#aaa;margin-top:6px;}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-nav button{background:#f4f6f9;border:1px solid #e0e0e0;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:16px;color:#333;}
+.cal-title{font-size:15px;font-weight:600;color:#222;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.dow{font-size:10px;color:#aaa;text-align:center;padding:3px 0;font-weight:600;}
+.cd{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;border:1px solid transparent;font-size:13px;background:transparent;transition:all .1s;}
+.cd:hover:not(.empty):not(.past){background:#f0f0f0;}
+.cd.empty,.cd.past{opacity:.3;cursor:default;pointer-events:none;}
+.cd.thu{background:#E6F1FB;}.cd.tue{background:#EAF3DE;}.cd.wed{background:#F0EEFF;}.cd.regatta{background:#FAEEDA;}
+.cd.selected{background:#185FA5!important;border-color:#185FA5;}
+.cd.selected .num{color:#fff!important;}.cd.selected .dot{background:#fff!important;}
+.num{font-size:13px;font-weight:600;line-height:1;color:#222;}
+.dot{width:4px;height:4px;border-radius:50%;margin-top:2px;}
+.thu .dot{background:#378ADD;}.tue .dot{background:#639922;}.wed .dot{background:#7F77DD;}.regatta .dot{background:#BA7517;}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.legend span{font-size:10px;color:#888;display:flex;align-items:center;gap:3px;}
+.legend i{width:8px;height:8px;border-radius:2px;display:inline-block;}
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.pill{background:#E6F1FB;color:#0C447C;border-radius:12px;padding:3px 8px;font-size:11px;display:flex;align-items:center;gap:4px;}
+.pill button{background:none;border:none;cursor:pointer;color:#185FA5;font-size:13px;padding:0;line-height:1;font-weight:700;}
+.roles-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.role-btn{padding:10px 8px;border:1px solid #eee;border-radius:8px;font-size:12px;cursor:pointer;background:#fafafa;text-align:left;width:100%;}
+.role-btn .rn{font-size:13px;font-weight:600;color:#222;display:block;margin-bottom:2px;}
+.role-btn .rd{font-size:10px;color:#aaa;}
+.role-btn.selected{border-color:#185FA5;background:#E6F1FB;}
+.role-btn.selected .rn{color:#0C447C;}
+.tw{position:relative;width:44px;height:24px;flex-shrink:0;}
+.tw input{opacity:0;width:0;height:0;position:absolute;}
+.ts{position:absolute;inset:0;background:#ddd;border-radius:12px;cursor:pointer;transition:background .2s;}
+.tw input:checked+.ts{background:#639922;}
+.ts:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;}
+.tw input:checked+.ts:before{transform:translateX(20px);}
+.submit-btn{width:100%;padding:14px;background:#185FA5;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;}
+.submit-btn:disabled{opacity:.5;cursor:default;}
+.spinner{display:none;width:20px;height:20px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.err{color:#A32D2D;font-size:13px;margin-top:8px;display:none;}
+.success{display:none;padding:32px 20px;text-align:center;}
+.ok-circle{width:56px;height:56px;background:#EAF3DE;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <h1>Sailing with Attitude</h1>
+    <p>Sign up for the 2025 season — pick any days you can sail</p>
+  </div>
+  <div id="form-body">
+    <div class="section">
+      <div class="lbl">Your name</div>
+      <div class="name-tabs">
+        <button class="name-tab active" onclick="switchTab('select')">Choose from list</button>
+        <button class="name-tab" onclick="switchTab('type')">Type my name</button>
+      </div>
+      <div id="tab-select">
+        <select id="name-select">
+          <option value="">— select your name —</option>
+          <option>Dave</option><option>Eric</option><option>Sara</option>
+          <option>Sam</option><option>Derek</option><option>Gerry</option>
+          <option>Jerry H</option><option>Dave P</option>
+          <option>New crew member...</option>
+        </select>
+      </div>
+      <div id="tab-type" style="display:none;">
+        <input type="text" id="name-input" placeholder="Enter your name">
+      </div>
+    </div>
+    <div class="section">
+      <div class="lbl">Your email <span style="font-weight:400;font-size:10px;color:#aaa;">we'll send your personal edit link here</span></div>
+      <input type="email" id="email-input" placeholder="you@example.com">
+    </div>
+    <div class="section">
+      <div class="lbl">Days I can sail <span style="font-weight:400;font-size:10px;color:#aaa;" id="day-count"></span></div>
+      <div class="cal-nav">
+        <button onclick="changeMonth(-1)">&#8249;</button>
+        <span class="cal-title" id="cal-title"></span>
+        <button onclick="changeMonth(1)">&#8250;</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="legend">
+        <span><i style="background:#E6F1FB;border:1px solid #378ADD;"></i>Race Thu</span>
+        <span><i style="background:#EAF3DE;border:1px solid #639922;"></i>Practice Tue</span>
+        <span><i style="background:#F0EEFF;border:1px solid #7F77DD;"></i>Wed sail</span>
+        <span><i style="background:#FAEEDA;border:1px solid #BA7517;"></i>Regatta</span>
+      </div>
+      <div class="pills" id="sel-pills"></div>
+      <div class="hint" id="sel-count">Tap any date to add it — select as many as you like</div>
+    </div>
+    <div class="section">
+      <div class="lbl">Job preferences <span style="font-weight:400;font-size:10px;color:#aaa;">pick up to 3</span></div>
+      <div class="roles-grid" id="roles-grid"></div>
+      <div class="hint" id="role-hint">0 of 3 selected</div>
+    </div>
+    <div class="section">
+      <div class="lbl">Beer duty</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <label class="tw"><input type="checkbox" id="beer-check"><span class="ts"></span></label>
+        <span style="font-size:14px;color:#333;">I can bring beer this outing</span>
+      </div>
+      <div class="hint" style="margin-top:6px;">Everyone rotates — skipper tracks whose turn it is</div>
+    </div>
+    <div class="section">
+      <div class="lbl">Notes for skipper</div>
+      <textarea id="notes" rows="2" placeholder="e.g. away July 4th week, still learning spinnaker..."></textarea>
+    </div>
+    <div class="section" style="border-bottom:none;">
+      <button class="submit-btn" id="submit-btn" onclick="submitForm()">
+        <span id="btn-text">Sign me up</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+      <div class="err" id="err-msg"></div>
+    </div>
+  </div>
+  <div class="success" id="success-msg">
+    <div class="ok-circle">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div style="font-size:18px;font-weight:600;color:#222;margin-bottom:8px;">You're on the schedule!</div>
+    <div id="confirm-text" style="font-size:13px;color:#666;margin-bottom:6px;line-height:1.6;text-align:left;"></div>
+    <div style="font-size:12px;color:#aaa;margin-bottom:20px;">Check your email for a link to update your availability anytime.</div>
+    <button onclick="resetForm()" style="font-size:13px;padding:9px 22px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;color:#333;">Sign up someone else</button>
+  </div>
+</div>
+<script>
+const SCRIPT_URL='YOUR_APPS_SCRIPT_URL_HERE';
+const regattas={'2025-06-14':'LMSS DH','2025-06-15':'LMSS DH','2025-08-09':'Sunfish Nat','2025-08-10':'Sunfish Nat'};
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOWS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+const today=new Date();today.setHours(0,0,0,0);
+const seasonStart=new Date(2025,4,1),seasonEnd=new Date(2025,8,30);
+let curYear=2025,curMonth=4;
+const selDays=new Map(),selRoles=new Set();
+let activeTab='select';
+function isoKey(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+function dayClass(y,m,d){const k=isoKey(y,m,d);if(regattas[k])return 'regatta';const dow=new Date(y,m,d).getDay();if(dow===4)return 'thu';if(dow===2)return 'tue';if(dow===3)return 'wed';return '';}
+function renderCal(){
+  const grid=document.getElementById('cal-grid');grid.innerHTML='';
+  DOWS.forEach(d=>{const el=document.createElement('div');el.className='dow';el.textContent=d;grid.appendChild(el);});
+  const firstDow=new Date(curYear,curMonth,1).getDay(),dim=new Date(curYear,curMonth+1,0).getDate();
+  for(let i=0;i<firstDow;i++){const el=document.createElement('div');el.className='cd empty';grid.appendChild(el);}
+  for(let d=1;d<=dim;d++){
+    const date=new Date(curYear,curMonth,d),k=isoKey(curYear,curMonth,d),dc=dayClass(curYear,curMonth,d);
+    const isPast=date<today,out=date<seasonStart||date>seasonEnd;
+    const el=document.createElement('div');
+    el.className='cd'+(dc?' '+dc:'')+(isPast||out?' past':'')+(selDays.has(k)?' selected':'');
+    const num=document.createElement('div');num.className='num';num.textContent=d;el.appendChild(num);
+    if(dc){const dot=document.createElement('div');dot.className='dot';el.appendChild(dot);}
+    if(!isPast&&!out){el.onclick=()=>{if(selDays.has(k)){selDays.delete(k);el.classList.remove('selected');}else{const dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()];selDays.set(k,dn+' '+MONTHS[curMonth].slice(0,3)+' '+d);el.classList.add('selected');}updatePills();};}
+    grid.appendChild(el);
+  }
+  document.getElementById('cal-title').textContent=MONTHS[curMonth]+' '+curYear;
+}
+function updatePills(){
+  const pills=document.getElementById('sel-pills');pills.innerHTML='';
+  [...selDays.entries()].sort((a,b)=>a[0].localeCompare(b[0])).forEach(([k,label])=>{const p=document.createElement('div');p.className='pill';p.innerHTML=label+'<button onclick="removeDay(\''+k+'\')">×</button>';pills.appendChild(p);});
+  const n=selDays.size;
+  document.getElementById('sel-count').textContent=n>0?n+' day'+(n>1?'s':'')+' selected':'Tap any date to add it — select as many as you like';
+  document.getElementById('day-count').textContent=n>0?'('+n+' selected)':'';
+}
+function removeDay(k){selDays.delete(k);updatePills();renderCal();}
+function changeMonth(dir){curMonth+=dir;if(curMonth>11){curMonth=0;curYear++;}if(curMonth<0){curMonth=11;curYear--;}renderCal();}
+const roles=[{name:'Skipper',desc:'Helm & tactics'},{name:'Bow person',desc:'Foredeck work'},{name:'Trimmer 1',desc:'Headsail trim'},{name:'Trimmer 2',desc:'Secondary trim'},{name:'Mainsail trimmer',desc:'Main & vang'},{name:'Rail meat',desc:'Hiking & ballast'},{name:'Mast person',desc:'Hoists & drops'},{name:'Open / any',desc:'Wherever needed'}];
+const rg=document.getElementById('roles-grid');
+roles.forEach((r,i)=>{const btn=document.createElement('button');btn.className='role-btn';btn.innerHTML='<span class="rn">'+r.name+'</span><span class="rd">'+r.desc+'</span>';btn.onclick=()=>{if(selRoles.has(i)){selRoles.delete(i);btn.classList.remove('selected');}else if(selRoles.size<3){selRoles.add(i);btn.classList.add('selected');}document.getElementById('role-hint').textContent=selRoles.size+' of 3 selected';};rg.appendChild(btn);});
+function switchTab(t){activeTab=t;document.getElementById('tab-select').style.display=t==='select'?'block':'none';document.getElementById('tab-type').style.display=t==='type'?'block':'none';document.querySelectorAll('.name-tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='select')||(i===1&&t==='type')));}
+function getName(){return activeTab==='select'?document.getElementById('name-select').value:document.getElementById('name-input').value.trim();}
+function showErr(msg){const e=document.getElementById('err-msg');e.textContent=msg;e.style.display='block';}
+function hideErr(){document.getElementById('err-msg').style.display='none';}
+function submitForm(){
+  hideErr();
+  const name=getName(),email=document.getElementById('email-input').value.trim();
+  if(!name){showErr('Please enter your name.');return;}
+  if(!email||!email.includes('@')){showErr('Please enter a valid email address.');return;}
+  if(selDays.size===0){showErr('Please select at least one day.');return;}
+  if(selRoles.size===0){showErr('Please pick at least one job preference.');return;}
+  const btn=document.getElementById('submit-btn');btn.disabled=true;
+  document.getElementById('btn-text').style.display='none';document.getElementById('spinner').style.display='block';
+  const payload={name,email,days:[...selDays.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([,l])=>l).join(', '),jobs:[...selRoles].map(i=>roles[i].name).join(', '),beer:document.getElementById('beer-check').checked?'Yes':'No',notes:document.getElementById('notes').value.trim()};
+  fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
+    .then(()=>{document.getElementById('form-body').style.display='none';document.getElementById('success-msg').style.display='block';document.getElementById('confirm-text').innerHTML='<strong>'+name+'</strong> signed up for '+selDays.size+' day'+(selDays.size>1?'s':'')+'.<br>Jobs: '+payload.jobs+(payload.beer==='Yes'?'<br>Bringing beer!':'');})
+    .catch(()=>{showErr('Could not connect. Please try again.');btn.disabled=false;document.getElementById('btn-text').style.display='inline';document.getElementById('spinner').style.display='none';});
+}
+function resetForm(){document.getElementById('form-body').style.display='block';document.getElementById('success-msg').style.display='none';document.getElementById('name-select').value='';document.getElementById('name-input').value='';document.getElementById('email-input').value='';document.getElementById('notes').value='';document.getElementById('beer-check').checked=false;document.getElementById('submit-btn').disabled=false;document.getElementById('btn-text').style.display='inline';document.getElementById('spinner').style.display='none';selDays.clear();selRoles.clear();document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('selected'));document.getElementById('role-hint').textContent='0 of 3 selected';hideErr();updatePills();renderCal();}
+const params=new URLSearchParams(window.location.search);
+if(params.get('name')){const n=params.get('name');if(['Dave','Eric','Sara','Sam','Derek','Gerry','Jerry H','Dave P'].includes(n)){document.getElementById('name-select').value=n;}else{switchTab('type');document.getElementById('name-input').value=n;}}
+if(params.get('email'))document.getElementById('email-input').value=params.get('email');
+if(params.get('notes'))document.getElementById('notes').value=params.get('notes');
+if(params.get('beer')==='Yes')document.getElementById('beer-check').checked=true;
+renderCal();updatePills();
+</script>
+</body>
+</html>
