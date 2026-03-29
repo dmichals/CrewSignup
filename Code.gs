@@ -1,6 +1,6 @@
 // ── CONFIG ────────────────────────────────────────────────
 const SHEET_NAME  = 'Sheet1';
-const SIGNUP_URL  = 'YOUR_HOSTED_SIGNUP_PAGE_URL_HERE';
+const SIGNUP_URL  = 'https://dmichals.github.io/CrewSignup/signup.html';
 const REPLY_EMAIL = 'djmichals@gmail.com';
 const SITE_NAME   = 'Sailing with Attitude';
 // ──────────────────────────────────────────────────────────
