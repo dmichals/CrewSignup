@@ -198,7 +198,7 @@ function submitForm(){
   const btn=document.getElementById('submit-btn');btn.disabled=true;
   document.getElementById('btn-text').style.display='none';document.getElementById('spinner').style.display='block';
   const payload={name,email,days:[...selDays.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([,l])=>l).join(', '),jobs:[...selRoles].map(i=>roles[i].name).join(', '),beer:document.getElementById('beer-check').checked?'Yes':'No',notes:document.getElementById('notes').value.trim()};
-  fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
+  fetch(SCRIPT_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)})
     .then(()=>{document.getElementById('form-body').style.display='none';document.getElementById('success-msg').style.display='block';document.getElementById('confirm-text').innerHTML='<strong>'+name+'</strong> signed up for '+selDays.size+' day'+(selDays.size>1?'s':'')+'.<br>Jobs: '+payload.jobs+(payload.beer==='Yes'?'<br>Bringing beer!':'');})
     .catch(()=>{showErr('Could not connect. Please try again.');btn.disabled=false;document.getElementById('btn-text').style.display='inline';document.getElementById('spinner').style.display='none';});
 }
