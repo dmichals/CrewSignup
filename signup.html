@@ -107,19 +107,12 @@ textarea{resize:none;}
       </div>
       <div class="pills" id="sel-pills"></div>
       <div class="hint" id="sel-count">Tap any date to add it — select as many as you like</div>
+      <div class="hint" style="margin-top:4px;">Toggle the beer switch on any day you can bring some</div>
     </div>
     <div class="section">
       <div class="lbl">Job preferences <span style="font-weight:400;font-size:10px;color:#aaa;">pick up to 3</span></div>
       <div class="roles-grid" id="roles-grid"></div>
       <div class="hint" id="role-hint">0 of 3 selected</div>
-    </div>
-    <div class="section">
-      <div class="lbl">Beer duty</div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <label class="tw"><input type="checkbox" id="beer-check"><span class="ts"></span></label>
-        <span style="font-size:14px;color:#333;">I can bring beer this outing</span>
-      </div>
-      <div class="hint" style="margin-top:6px;">Everyone rotates — skipper tracks whose turn it is</div>
     </div>
     <div class="section">
       <div class="lbl">Notes for skipper</div>
@@ -151,7 +144,7 @@ const DOWS=['Su','Mo','Tu','We','Th','Fr','Sa'];
 const today=new Date();today.setHours(0,0,0,0);
 const seasonStart=new Date(2026,4,1),seasonEnd=new Date(2026,8,30);
 let curYear=2026,curMonth=4;
-const selDays=new Map(),selRoles=new Set();
+const selDays=new Map(),selRoles=new Set(),beerDays=new Set();  
 let activeTab='select';
 function isoKey(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
 function dayClass(y,m,d){const k=isoKey(y,m,d);if(regattas[k])return 'regatta';const dow=new Date(y,m,d).getDay();if(dow===4)return 'thu';if(dow===2)return 'tue';if(dow===3)return 'wed';return '';}
@@ -173,8 +166,39 @@ function renderCal(){
   document.getElementById('cal-title').textContent=MONTHS[curMonth]+' '+curYear;
 }
 function updatePills(){
-  const pills=document.getElementById('sel-pills');pills.innerHTML='';
-  [...selDays.entries()].sort((a,b)=>a[0].localeCompare(b[0])).forEach(([k,label])=>{const p=document.createElement('div');p.className='pill';p.innerHTML=label+'<button onclick="removeDay(\''+k+'\')">×</button>';pills.appendChild(p);});
+  const pills=document.getElementById('sel-pills');
+  pills.innerHTML='';
+  [...selDays.entries()].sort((a,b)=>a[0].localeCompare(b[0])).forEach(([k,label])=>{
+    const p=document.createElement('div');
+    p.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 8px;background:#f4f6f9;border-radius:8px;margin-bottom:5px;font-size:12px;';
+    const lbl=document.createElement('span');
+    lbl.style.cssText='flex:1;color:#222;font-weight:500;';
+    lbl.textContent=label;
+    const beerLabel=document.createElement('span');
+    beerLabel.style.cssText='font-size:11px;color:#aaa;';
+    beerLabel.textContent='Beer?';
+    const tw=document.createElement('label');
+    tw.style.cssText='position:relative;width:36px;height:20px;flex-shrink:0;';
+    const checked=beerDays.has(k);
+    tw.innerHTML='<input type="checkbox" '+(checked?'checked':'')+' style="opacity:0;width:0;height:0;position:absolute;">'
+      +'<span style="position:absolute;inset:0;background:'+(checked?'#639922':'#ddd')+';border-radius:10px;cursor:pointer;transition:background .2s;">'
+      +'<span style="position:absolute;width:14px;height:14px;left:'+(checked?'19px':'3px')+';top:3px;background:#fff;border-radius:50%;transition:left .2s;"></span>'
+      +'</span>';
+    const input=tw.querySelector('input');
+    input.onchange=()=>{
+      if(input.checked){beerDays.add(k);}else{beerDays.delete(k);}
+      updatePills();
+    };
+    const removeBtn=document.createElement('button');
+    removeBtn.textContent='×';
+    removeBtn.style.cssText='background:none;border:none;cursor:pointer;color:#aaa;font-size:15px;padding:0;line-height:1;font-weight:700;';
+    removeBtn.onclick=()=>removeDay(k);
+    p.appendChild(lbl);
+    p.appendChild(beerLabel);
+    p.appendChild(tw);
+    p.appendChild(removeBtn);
+    pills.appendChild(p);
+  });
   const n=selDays.size;
   document.getElementById('sel-count').textContent=n>0?n+' day'+(n>1?'s':'')+' selected':'Tap any date to add it — select as many as you like';
   document.getElementById('day-count').textContent=n>0?'('+n+' selected)':'';
@@ -197,12 +221,12 @@ function submitForm(){
   if(selRoles.size===0){showErr('Please pick at least one job preference.');return;}
   const btn=document.getElementById('submit-btn');btn.disabled=true;
   document.getElementById('btn-text').style.display='none';document.getElementById('spinner').style.display='block';
-  const payload={name,email,days:[...selDays.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([,l])=>l).join(', '),jobs:[...selRoles].map(i=>roles[i].name).join(', '),beer:document.getElementById('beer-check').checked?'Yes':'No',notes:document.getElementById('notes').value.trim()};
+  const payload={name,email,days:[...selDays.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([,l])=>l).join(', '),jobs:[...selRoles].map(i=>roles[i].name).join(', '),beer:[...beerDays].sort().map(k=>{return selDays.get(k);}).join(', ')||'None',notes:document.getElementById('notes').value.trim()};
   fetch(SCRIPT_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)})
     .then(()=>{document.getElementById('form-body').style.display='none';document.getElementById('success-msg').style.display='block';document.getElementById('confirm-text').innerHTML='<strong>'+name+'</strong> signed up for '+selDays.size+' day'+(selDays.size>1?'s':'')+'.<br>Jobs: '+payload.jobs+(payload.beer==='Yes'?'<br>Bringing beer!':'');})
     .catch(()=>{showErr('Could not connect. Please try again.');btn.disabled=false;document.getElementById('btn-text').style.display='inline';document.getElementById('spinner').style.display='none';});
 }
-function resetForm(){document.getElementById('form-body').style.display='block';document.getElementById('success-msg').style.display='none';document.getElementById('name-select').value='';document.getElementById('name-input').value='';document.getElementById('email-input').value='';document.getElementById('notes').value='';document.getElementById('beer-check').checked=false;document.getElementById('submit-btn').disabled=false;document.getElementById('btn-text').style.display='inline';document.getElementById('spinner').style.display='none';selDays.clear();selRoles.clear();document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('selected'));document.getElementById('role-hint').textContent='0 of 3 selected';hideErr();updatePills();renderCal();}
+function resetForm(){document.getElementById('form-body').style.display='block';document.getElementById('success-msg').style.display='none';document.getElementById('name-select').value='';document.getElementById('name-input').value='';document.getElementById('email-input').value='';document.getElementById('notes').value='';document.getElementById('beer-check').checked=false;document.getElementById('submit-btn').disabled=false;document.getElementById('btn-text').style.display='inline';document.getElementById('spinner').style.display='none';selDays.clear();selRoles.clear();beerDays.clear();document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('selected'));document.getElementById('role-hint').textContent='0 of 3 selected';hideErr();updatePills();renderCal();}
 const params=new URLSearchParams(window.location.search);
 if(params.get('name')){const n=params.get('name');if(['Dave','Eric','Sara','Sam','Derek','Gerry','Jerry H','Dave P'].includes(n)){document.getElementById('name-select').value=n;}else{switchTab('type');document.getElementById('name-input').value=n;}}
 if(params.get('email'))document.getElementById('email-input').value=params.get('email');
