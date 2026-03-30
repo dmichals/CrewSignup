@@ -1,0 +1,10 @@
+update the confirmation email in Code.gs to show the beer days nicely
+
+Updates the sheets to show it nicely.
+
+Update your availability anytime: Can't see existing dates.  Should be able to delete, add and change.
+
+IS there a way so everyone can see what is avalable?
+
+Is there a captens view?
+
