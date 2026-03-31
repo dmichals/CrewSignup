@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sailing with Attitude — Captain's View</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f6f9;min-height:100vh;padding:16px;}
+.card{max-width:600px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.header{background:#0C3D6B;padding:18px 20px 14px;}
+.header h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:4px;}
+.header p{font-size:13px;color:#7BADD4;}
+.tabs{display:flex;border-bottom:1px solid #eee;overflow-x:auto;}
+.tab{padding:12px 16px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;color:#888;border-bottom:2px solid transparent;white-space:nowrap;}
+.tab.active{color:#0C3D6B;border-bottom-color:#0C3D6B;}
+.section{padding:16px 20px;}
+.day-block{margin-bottom:20px;border:1px solid #eee;border-radius:12px;overflow:hidden;}
+.day-header{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+.thu .day-header{background:#E6F1FB;}.tue .day-header{background:#EAF3DE;}.wed .day-header{background:#F0EEFF;}.regatta .day-header{background:#FAEEDA;}
+.day-title{font-size:14px;font-weight:600;color:#222;}
+.day-meta{font-size:11px;color:#888;}
+.crew-table{width:100%;border-collapse:collapse;}
+.crew-table th{font-size:10px;color:#aaa;font-weight:600;text-transform:uppercase;padding:8px 14px;text-align:left;border-bottom:1px solid #f0f0f0;}
+.crew-table td{font-size:13px;padding:8px 14px;border-bottom:1px solid #f8f8f8;color:#333;}
+.crew-table tr:last-child td{border-bottom:none;}
+.beer-yes{color:#3B6D11;font-weight:600;}
+.no-crew{padding:14px;font-size:13px;color:#aaa;font-style:italic;}
+.msg-box{padding:16px 20px;border-top:1px solid #eee;}
+.msg-box textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;resize:none;margin-bottom:8px;}
+.msg-btn{padding:10px 20px;background:#0C3D6B;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;}
+.msg-btn:disabled{opacity:.5;}
+.print-btn{padding:10px 20px;background:#f4f6f9;color:#333;border:1px solid #ddd;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin-left:8px;}
+.beer-section .person-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0;}
+.beer-section .person-row:last-child{border-bottom:none;}
+.beer-count{font-size:13px;font-weight:600;color:#3B6D11;}
+.loading{padding:40px;text-align:center;color:#aaa;}
+.lock{padding:60px 20px;text-align:center;}
+.lock input{width:100%;max-width:280px;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;text-align:center;margin:12px 0;}
+.lock button{padding:10px 24px;background:#0C3D6B;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;}
+.stat-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.stat{flex:1;min-width:80px;background:#f4f6f9;border-radius:10px;padding:12px;text-align:center;}
+.stat .n{font-size:24px;font-weight:700;color:#0C3D6B;}
+.stat .l{font-size:11px;color:#888;margin-top:2px;}
+@media print{.tabs,.msg-box,.print-btn,.msg-btn{display:none!important;}.card{box-shadow:none;}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <h1>⚓ Captain's View</h1>
+    <p>Sailing with Attitude — 2026 Season</p>
+  </div>
+  <div id="lock-screen" class="lock">
+    <div style="font-size:32px;margin-bottom:8px;">🔒</div>
+    <div style="font-size:16px;font-weight:600;color:#222;margin-bottom:4px;">Captain's Dashboard</div>
+    <div style="font-size:13px;color:#888;">Enter the access key to continue</div>
+    <input type="password" id="key-input" placeholder="Access key" onkeydown="if(event.key==='Enter')unlock()">
+    <br><button onclick="unlock()">Enter</button>
+    <div id="key-err" style="font-size:12px;color:#A32D2D;margin-top:8px;display:none;">Incorrect key</div>
+  </div>
+  <div id="main" style="display:none;">
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('roster')">Roster by Day</div>
+      <div class="tab" onclick="showTab('beer')">Beer Duty</div>
+      <div class="tab" onclick="showTab('message')">Message Crew</div>
+    </div>
+    <div id="roster-view" class="section">
+      <div class="loading" id="roster-loading">Loading...</div>
+      <div id="roster-wrap"></div>
+    </div>
+    <div id="beer-view" class="section" style="display:none;">
+      <div id="beer-wrap"></div>
+    </div>
+    <div id="message-view" style="display:none;">
+      <div class="msg-box">
+        <div style="font-size:13px;font-weight:600;color:#222;margin-bottom:8px;">Message all crew</div>
+        <div style="font-size:12px;color:#888;margin-bottom:10px;" id="recipient-count"></div>
+        <textarea id="msg-text" rows="4" placeholder="Type your message here..."></textarea>
+        <div>
+          <button class="msg-btn" onclick="sendMessage()" id="msg-btn">Send to all crew</button>
+          <button class="print-btn" onclick="window.print()">🖨 Print schedule</button>
+        </div>
+        <div id="msg-status" style="font-size:12px;margin-top:8px;color:#3B6D11;display:none;">Message sent!</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const SCRIPT_URL='YOUR_APPS_SCRIPT_URL_HERE';
+const CAPTAIN_KEY='sailingwithattitude2026';
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const regattas={'2026-06-14':'LMSS DH','2026-06-15':'LMSS DH','2026-08-09':'Sunfish Nat','2026-08-10':'Sunfish Nat'};
+const today=new Date();today.setHours(0,0,0,0);
+let crewData=[];
+
+function isoKey(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+function dayClass(y,m,d){const k=isoKey(y,m,d);if(regattas[k])return 'regatta';const dow=new Date(y,m,d).getDay();if(dow===4)return 'thu';if(dow===2)return 'tue';if(dow===3)return 'wed';return '';}
+function dayTypeName(cls){return{thu:'Race Thursday',tue:'Practice Tuesday',wed:'Wednesday Sail',regatta:'Regatta'}[cls]||'';}
+function labelForDate(y,m,d){const date=new Date(y,m,d);const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()];return dow+' '+MONTHS[m].slice(0,3)+' '+d;}
+
+function unlock(){
+  const val=document.getElementById('key-input').value.trim();
+  if(val===CAPTAIN_KEY){
+    document.getElementById('lock-screen').style.display='none';
+    document.getElementById('main').style.display='block';
+    loadData();
+  } else {
+    document.getElementById('key-err').style.display='block';
+  }
+}
+
+function loadData(){
+  fetch(SCRIPT_URL+'?action=captain&key='+CAPTAIN_KEY)
+    .then(r=>r.json())
+    .then(data=>{
+      crewData=data.crew||[];
+      document.getElementById('roster-loading').style.display='none';
+      document.getElementById('recipient-count').textContent=crewData.length+' crew members signed up';
+      renderRoster();
+      renderBeer();
+    });
+}
+
+function buildDayMap(){
+  const map={};
+  crewData.forEach(person=>{
+    if(!person.days) return;
+    person.days.split(', ').forEach(label=>{
+      label=label.trim();if(!label)return;
+      if(!map[label])map[label]={crew:[]};
+      const beerDays=person.beer&&person.beer!=='None'?person.beer.split(', ').map(b=>b.trim()):[];
+      map[label].crew.push({name:person.name,jobs:person.jobs,beer:beerDays.includes(label),notes:person.notes,email:person.email});
+    });
+  });
+  return map;
+}
+
+function renderRoster(){
+  const map=buildDayMap();
+  const wrap=document.getElementById('roster-wrap');wrap.innerHTML='';
+  const allDays=[];
+  for(let m=4;m<=8;m++){
+    const dim=new Date(2026,m+1,0).getDate();
+    for(let d=1;d<=dim;d++){
+      const dc=dayClass(2026,m,d);if(!dc)continue;
+      allDays.push({label:labelForDate(2026,m,d),dc,date:new Date(2026,m,d)});
+    }
+  }
+  // Stats
+  const statDiv=document.createElement('div');statDiv.className='stat-row';
+  const totalDays=allDays.length,signedUp=crewData.length,daysWithCrew=allDays.filter(({label})=>map[label]&&map[label].crew.length>0).length;
+  statDiv.innerHTML='<div class="stat"><div class="n">'+signedUp+'</div><div class="l">Crew signed up</div></div>'
+    +'<div class="stat"><div class="n">'+totalDays+'</div><div class="l">Sailing days</div></div>'
+    +'<div class="stat"><div class="n">'+daysWithCrew+'</div><div class="l">Days with crew</div></div>';
+  wrap.appendChild(statDiv);
+
+  allDays.forEach(({label,dc,date})=>{
+    const isPast=date<today;if(isPast)return;
+    const info=map[label];
+    const block=document.createElement('div');block.className='day-block '+dc;
+    const hdr=document.createElement('div');hdr.className='day-header';
+    hdr.innerHTML='<span class="day-title">'+label+'</span><span class="day-meta">'+dayTypeName(dc)+(info?' · '+info.crew.length+' crew':'· No signups')+'</span>';
+    block.appendChild(hdr);
+    if(!info||info.crew.length===0){block.innerHTML+='<div class="no-crew">No one signed up yet</div>';}
+    else{
+      const tbl=document.createElement('table');tbl.className='crew-table';
+      tbl.innerHTML='<tr><th>Name</th><th>Jobs</th><th>Beer</th><th>Notes</th></tr>';
+      info.crew.forEach(p=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML='<td><strong>'+p.name+'</strong></td><td style="font-size:11px;">'+p.jobs+'</td><td class="'+(p.beer?'beer-yes':'')+'">'+( p.beer?'🍺 Yes':'-')+'</td><td style="font-size:11px;color:#888;">'+( p.notes||'-')+'</td>';
+        tbl.appendChild(tr);
+      });
+      block.appendChild(tbl);
+    }
+    wrap.appendChild(block);
+  });
+}
+
+function renderBeer(){
+  const wrap=document.getElementById('beer-wrap');wrap.innerHTML='';
+  const beerCount={};
+  crewData.forEach(person=>{
+    if(!person.beer||person.beer==='None')return;
+    const days=person.beer.split(', ').filter(Boolean);
+    beerCount[person.name]=(beerCount[person.name]||0)+days.length;
+  });
+  wrap.innerHTML='<div style="font-size:13px;font-weight:600;color:#222;margin-bottom:12px;">Beer duty by crew member</div>';
+  const sorted=Object.entries(beerCount).sort((a,b)=>b[1]-a[1]);
+  if(sorted.length===0){wrap.innerHTML+='<div style="font-size:13px;color:#aaa;font-style:italic;">No beer commitments yet</div>';return;}
+  const div=document.createElement('div');div.className='beer-section';
+  sorted.forEach(([name,count])=>{
+    div.innerHTML+='<div class="person-row"><span style="font-size:14px;font-weight:500;">'+name+'</span><span class="beer-count">🍺 ×'+count+'</span></div>';
+  });
+  wrap.appendChild(div);
+}
+
+function showTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['roster','beer','message'][i]===t));
+  document.getElementById('roster-view').style.display=t==='roster'?'block':'none';
+  document.getElementById('beer-view').style.display=t==='beer'?'block':'none';
+  document.getElementById('message-view').style.display=t==='message'?'block':'none';
+}
+
+function sendMessage(){
+  const msg=document.getElementById('msg-text').value.trim();
+  if(!msg)return;
+  const btn=document.getElementById('msg-btn');btn.disabled=true;btn.textContent='Sending...';
+  const emails=crewData.map(p=>p.email).filter(Boolean);
+  fetch(SCRIPT_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({action:'message',key:CAPTAIN_KEY,message:msg,emails})})
+    .then(()=>{document.getElementById('msg-status').style.display='block';btn.textContent='Sent!';})
+    .catch(()=>{btn.disabled=false;btn.textContent='Send to all crew';});
+}
+</script>
+</body>
+</html>
