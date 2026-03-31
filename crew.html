@@ -192,7 +192,7 @@ function changeMonth(dir){
   renderCal();
 }
 
-fetch(SCRIPT_URL+'?action=crew')
+fetch(SCRIPT_URL+'?action=crew', {redirect: 'follow'})  
   .then(r=>r.json())
   .then(data=>{
     crewData=data.crew||[];
