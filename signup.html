@@ -228,11 +228,60 @@ function submitForm(){
 }
 function resetForm(){document.getElementById('form-body').style.display='block';document.getElementById('success-msg').style.display='none';document.getElementById('name-select').value='';document.getElementById('name-input').value='';document.getElementById('email-input').value='';document.getElementById('notes').value='';document.getElementById('beer-check').checked=false;document.getElementById('submit-btn').disabled=false;document.getElementById('btn-text').style.display='inline';document.getElementById('spinner').style.display='none';selDays.clear();selRoles.clear();beerDays.clear();document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('selected'));document.getElementById('role-hint').textContent='0 of 3 selected';hideErr();updatePills();renderCal();}
 const params=new URLSearchParams(window.location.search);
-if(params.get('name')){const n=params.get('name');if(['Dave','Eric','Sara','Sam','Derek','Gerry','Jerry H','Dave P'].includes(n)){document.getElementById('name-select').value=n;}else{switchTab('type');document.getElementById('name-input').value=n;}}
-if(params.get('email'))document.getElementById('email-input').value=params.get('email');
-if(params.get('notes'))document.getElementById('notes').value=params.get('notes');
-if(params.get('beer')==='Yes')document.getElementById('beer-check').checked=true;
-renderCal();updatePills();
+if(params.get('name')){
+  const n=params.get('name');
+  if(['Dave','Eric','Sara','Sam','Derek','Gerry','Jerry H','Dave P'].includes(n)){
+    document.getElementById('name-select').value=n;
+  } else {
+    switchTab('type');
+    document.getElementById('name-input').value=n;
+  }
+}
+if(params.get('email')) document.getElementById('email-input').value=params.get('email');
+if(params.get('notes')) document.getElementById('notes').value=params.get('notes');
+
+// Restore selected days
+if(params.get('days')){
+  const dayLabels=params.get('days').split(', ').filter(Boolean);
+  // Build a reverse map: label → ISO key
+  // We need to scan May–Sep 2026 and match labels
+  for(let m=4;m<=8;m++){
+    const dim=new Date(2026,m+1,0).getDate();
+    for(let d=1;d<=dim;d++){
+      const date=new Date(2026,m,d);
+      const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()];
+      const label=dow+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m]+' '+d;
+      if(dayLabels.includes(label)){
+        const k=isoKey(2026,m,d);
+        selDays.set(k,label);
+      }
+    }
+  }
+}
+
+// Restore beer days
+if(params.get('beer')){
+  const beerLabels=params.get('beer').split(', ').filter(d=>d&&d!=='None');
+  [...selDays.entries()].forEach(([k,label])=>{
+    if(beerLabels.includes(label)) beerDays.add(k);
+  });
+}
+
+// Restore job roles
+if(params.get('jobs')){
+  const savedJobs=params.get('jobs').split(', ').filter(Boolean);
+  document.querySelectorAll('.role-btn').forEach((btn,i)=>{
+    const roleName=btn.querySelector('.rn').textContent;
+    if(savedJobs.includes(roleName)){
+      selRoles.add(i);
+      btn.classList.add('selected');
+    }
+  });
+  document.getElementById('role-hint').textContent=selRoles.size+' of 3 selected';
+}
+
+renderCal();
+updatePills();
 </script>
 </body>
 </html>
