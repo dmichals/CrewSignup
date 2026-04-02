@@ -3,96 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sailing with Attitude — 2026 Crew Signup</title>
+<title>Sailing with Attitude — 2026 Schedule</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f6f9;min-height:100vh;padding:16px;}
-.card{max-width:420px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.1);}
+.card{max-width:480px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.1);}
 .header{background:#185FA5;padding:18px 20px 14px;}
 .header h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:4px;}
 .header p{font-size:13px;color:#B5D4F4;}
-.section{padding:16px 20px;border-bottom:1px solid #f0f0f0;}
-.section:last-child{border-bottom:none;}
-.lbl{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
-.name-tabs{display:flex;border:1px solid #ddd;border-radius:8px;overflow:hidden;margin-bottom:10px;}
-.name-tab{flex:1;padding:8px;font-size:13px;text-align:center;cursor:pointer;background:transparent;border:none;color:#888;}
-.name-tab.active{background:#185FA5;color:#fff;font-weight:600;}
-select,input[type=text],input[type=email],textarea{width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;color:#222;background:#fff;font-family:inherit;}
-textarea{resize:none;}
-.hint{font-size:11px;color:#aaa;margin-top:6px;}
-.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.tabs{display:flex;border-bottom:1px solid #eee;}
+.tab{flex:1;padding:12px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;color:#888;border-bottom:2px solid transparent;}
+.tab.active{color:#185FA5;border-bottom-color:#185FA5;}
+.section{padding:16px 20px;}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .cal-nav button{background:#f4f6f9;border:1px solid #e0e0e0;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:16px;color:#333;}
 .cal-title{font-size:15px;font-weight:600;color:#222;}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
 .dow{font-size:10px;color:#aaa;text-align:center;padding:3px 0;font-weight:600;}
-.cd{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;border:1px solid transparent;font-size:13px;background:transparent;transition:all .1s;}
-.cd:hover:not(.empty):not(.past){background:#f0f0f0;}
-.cd.empty,.cd.past{opacity:.3;cursor:default;pointer-events:none;}
-.cd.thu{background:#E6F1FB;}.cd.tue{background:#EAF3DE;}.cd.wed{background:#F0EEFF;}.cd.regatta{background:#FAEEDA;}
-.cd.selected{background:#185FA5!important;border-color:#185FA5;}
-.cd.selected .num{color:#fff!important;}.cd.selected .dot{background:#fff!important;}
-.num{font-size:13px;font-weight:600;line-height:1;color:#222;}
-.dot{width:4px;height:4px;border-radius:50%;margin-top:2px;}
-.thu .dot{background:#378ADD;}.tue .dot{background:#639922;}.wed .dot{background:#7F77DD;}.regatta .dot{background:#BA7517;}
+.cd{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;font-size:12px;position:relative;cursor:pointer;border:1px solid transparent;}
+.cd.empty,.cd.past{opacity:.25;pointer-events:none;}
+.cd.thu{background:#E6F1FB;}
+.cd.tue{background:#EAF3DE;}
+.cd.sat{background:#FDE8F5;}
+.cd.offshore{background:#FAEEDA;}
+.cd.has-crew{border-width:2px;}
+.cd.thu.has-crew{border-color:#378ADD;}
+.cd.tue.has-crew{border-color:#639922;}
+.cd.sat.has-crew{border-color:#B94FAA;}
+.cd.offshore.has-crew{border-color:#BA7517;}
+.num{font-size:12px;font-weight:600;color:#222;line-height:1;}
+.crew-count{font-size:9px;color:#555;margin-top:2px;}
+.tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#222;color:#fff;font-size:11px;padding:6px 10px;border-radius:8px;white-space:nowrap;z-index:10;pointer-events:none;min-width:80px;text-align:center;}
+.cd:hover .tooltip{display:block;}
 .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
 .legend span{font-size:10px;color:#888;display:flex;align-items:center;gap:3px;}
 .legend i{width:8px;height:8px;border-radius:2px;display:inline-block;}
-.pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
-.pill{background:#E6F1FB;color:#0C447C;border-radius:12px;padding:3px 8px;font-size:11px;display:flex;align-items:center;gap:4px;}
-.pill button{background:none;border:none;cursor:pointer;color:#185FA5;font-size:13px;padding:0;line-height:1;font-weight:700;}
-.roles-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.role-btn{padding:10px 8px;border:1px solid #eee;border-radius:8px;font-size:12px;cursor:pointer;background:#fafafa;text-align:left;width:100%;}
-.role-btn .rn{font-size:13px;font-weight:600;color:#222;display:block;margin-bottom:2px;}
-.role-btn .rd{font-size:10px;color:#aaa;}
-.role-btn.selected{border-color:#185FA5;background:#E6F1FB;}
-.role-btn.selected .rn{color:#0C447C;}
-.tw{position:relative;width:44px;height:24px;flex-shrink:0;}
-.tw input{opacity:0;width:0;height:0;position:absolute;}
-.ts{position:absolute;inset:0;background:#ddd;border-radius:12px;cursor:pointer;transition:background .2s;}
-.tw input:checked+.ts{background:#639922;}
-.ts:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;}
-.tw input:checked+.ts:before{transform:translateX(20px);}
-.submit-btn{width:100%;padding:14px;background:#185FA5;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;}
-.submit-btn:disabled{opacity:.5;cursor:default;}
-.spinner{display:none;width:20px;height:20px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.err{color:#A32D2D;font-size:13px;margin-top:8px;display:none;}
-.success{display:none;padding:32px 20px;text-align:center;}
-.ok-circle{width:56px;height:56px;background:#EAF3DE;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;}
+.day-row{padding:12px 0;border-bottom:1px solid #f0f0f0;}
+.day-row:last-child{border-bottom:none;}
+.day-label{font-size:13px;font-weight:600;color:#222;margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.day-event{font-size:10px;color:#666;font-style:italic;}
+.day-type{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600;}
+.thu-badge{background:#E6F1FB;color:#185FA5;}
+.tue-badge{background:#EAF3DE;color:#3B6D11;}
+.sat-badge{background:#FDE8F5;color:#8A2080;}
+.offshore-badge{background:#FAEEDA;color:#8A5010;}
+.crew-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.chip{background:#f4f6f9;border-radius:12px;padding:3px 10px;font-size:12px;color:#444;}
+.empty-day{font-size:12px;color:#aaa;font-style:italic;}
+.loading{padding:40px;text-align:center;color:#aaa;font-size:14px;}
+.signup-btn{display:block;margin:0 20px 20px;padding:12px;background:#185FA5;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;}
 </style>
 </head>
 <body>
 <div class="card">
   <div class="header">
     <h1>Sailing with Attitude</h1>
-    <p>Sign up for the 2026 season — pick any days you can sail</p>
+    <p>2026 Season — who's sailing when</p>
   </div>
-  <div id="form-body">
-    <div class="section">
-      <div class="lbl">Your name</div>
-      <div class="name-tabs">
-        <button class="name-tab active" onclick="switchTab('select')">Choose from list</button>
-        <button class="name-tab" onclick="switchTab('type')">Type my name</button>
-      </div>
-      <div id="tab-select">
-        <select id="name-select">
-          <option value="">— select your name —</option>
-          <option>Dave</option><option>Eric</option><option>Sara</option>
-          <option>Sam</option><option>Derek</option><option>Gerry</option>
-          <option>Jerry H</option><option>Dave P</option>
-          <option>New crew member...</option>
-        </select>
-      </div>
-      <div id="tab-type" style="display:none;">
-        <input type="text" id="name-input" placeholder="Enter your name">
-      </div>
-    </div>
-    <div class="section">
-      <div class="lbl">Your email <span style="font-weight:400;font-size:10px;color:#aaa;">we'll send your personal edit link here</span></div>
-      <input type="email" id="email-input" placeholder="you@example.com">
-    </div>
-    <div class="section">
-      <div class="lbl">Days I can sail <span style="font-weight:400;font-size:10px;color:#aaa;" id="day-count"></span></div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('calendar')">Calendar</div>
+    <div class="tab" onclick="showTab('list')">List</div>
+  </div>
+  <div id="calendar-view" class="section">
+    <div class="loading" id="cal-loading">Loading schedule...</div>
+    <div id="cal-wrap" style="display:none;">
       <div class="cal-nav">
         <button onclick="changeMonth(-1)">&#8249;</button>
         <span class="cal-title" id="cal-title"></span>
@@ -100,97 +74,56 @@ textarea{resize:none;}
       </div>
       <div class="cal-grid" id="cal-grid"></div>
       <div class="legend">
-        <span><i style="background:#E6F1FB;border:1px solid #378ADD;"></i>Race Thu</span>
-        <span><i style="background:#EAF3DE;border:1px solid #639922;"></i>Practice Tue</span>
-        <span><i style="background:#F0EEFF;border:1px solid #7F77DD;"></i>Wed sail</span>
-        <span><i style="background:#FAEEDA;border:1px solid #BA7517;"></i>Regatta</span>
+        <span><i style="background:#E6F1FB;border:1px solid #378ADD;"></i>Thu Race</span>
+        <span><i style="background:#EAF3DE;border:1px solid #639922;"></i>Tue Practice</span>
+        <span><i style="background:#FDE8F5;border:1px solid #B94FAA;"></i>Sat Race</span>
+        <span><i style="background:#FAEEDA;border:1px solid #BA7517;"></i>Offshore/Regatta</span>
       </div>
-      <div class="pills" id="sel-pills"></div>
-      <div class="hint" id="sel-count">Tap any date to add it — select as many as you like</div>
-      <div class="hint" style="margin-top:4px;">Toggle the beer switch on any day you can bring some</div>
-    </div>
-    <div class="section">
-      <div class="lbl">Job preferences <span style="font-weight:400;font-size:10px;color:#aaa;">pick up to 3</span></div>
-      <div class="roles-grid" id="roles-grid"></div>
-      <div class="hint" id="role-hint">0 of 3 selected</div>
-    </div>
-    <div class="section">
-      <div class="lbl">Notes for skipper</div>
-      <textarea id="notes" rows="2" placeholder="e.g. away July 4th week, still learning spinnaker..."></textarea>
-    </div>
-    <div class="section" style="border-bottom:none;">
-      <button class="submit-btn" id="submit-btn" onclick="submitForm()">
-        <span id="btn-text">Sign me up</span>
-        <div class="spinner" id="spinner"></div>
-      </button>
-      <div class="err" id="err-msg"></div>
     </div>
   </div>
-  <div class="success" id="success-msg">
-    <div class="ok-circle">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
-    <div style="font-size:18px;font-weight:600;color:#222;margin-bottom:8px;">You're on the schedule!</div>
-    <div id="confirm-text" style="font-size:13px;color:#666;margin-bottom:6px;line-height:1.6;text-align:left;"></div>
-    <div style="font-size:12px;color:#aaa;margin-bottom:20px;">Check your email for a link to update your availability anytime.</div>
-    <button onclick="resetForm()" style="font-size:13px;padding:9px 22px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;color:#333;">Sign up someone else</button>
+  <div id="list-view" class="section" style="display:none;">
+    <div class="loading" id="list-loading">Loading schedule...</div>
+    <div id="list-wrap" style="display:none;"></div>
   </div>
+  <a href="signup.html" class="signup-btn">Sign up / update my availability</a>
 </div>
 <script>
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycby9GNQAD00GQRyF0qPW-MRMc1V2rSAKmRizHPbjGbU6jqAqCwcNWSigCMmsxsifq6Rwcw/exec';
-const events={
-  // Saturdays
-  '2026-06-06':{type:'sat',name:'AYC Sat'},
-  '2026-07-11':{type:'sat',name:'AYC Sat'},
-  '2026-08-01':{type:'sat',name:'AYC Sat'},
-  '2026-09-05':{type:'sat',name:'AYC Sat'},
+const SCRIPT_URL='YOUR_APPS_SCRIPT_URL_HERE';
 
-  // Spring Opener
+const events={
+  '2026-06-06':{type:'sat',name:'AYC Sat Race'},
+  '2026-07-11':{type:'sat',name:'AYC Sat Race'},
+  '2026-08-01':{type:'sat',name:'AYC Sat Race'},
+  '2026-09-05':{type:'sat',name:'AYC Sat Race'},
   '2026-05-23':{type:'offshore',name:'Spring Opener'},
   '2026-05-24':{type:'offshore',name:'Spring Opener'},
-
-  // Chicago-Waukegan offshore
+  '2026-06-05':{type:'offshore',name:'Helly Hansen'},
+  '2026-06-07':{type:'offshore',name:'Helly Hansen'},
   '2026-06-20':{type:'offshore',name:'Chicago→Waukegan'},
   '2026-06-21':{type:'offshore',name:'Waukegan→Chicago'},
-
-  // Chicago-Hammond offshore
-  '2026-08-15':{type:'offshore',name:'Chicago→Hammond'},
-  '2026-08-16':{type:'offshore',name:'Hammond→Chicago'},
-
-  // Tri-State / Bi-State
-  '2026-09-04':{type:'offshore',name:'Tri-State Leg 1'},
-  '2026-09-06':{type:'offshore',name:'Bi-State / Tri-State Leg 2'},
-  '2026-09-07':{type:'offshore',name:'Tri-State Leg 3'},
-
-  // Helly Hansen
-  '2026-06-05':{type:'offshore',name:'Helly Hansen'},
-  '2026-06-06':{type:'offshore',name:'Helly Hansen'},
-  '2026-06-07':{type:'offshore',name:'Helly Hansen'},
-
-  // Race to Mackinac
   '2026-07-11':{type:'offshore',name:'Race to Mac'},
-
-  // CYC Verve Cup
   '2026-08-07':{type:'offshore',name:'Verve Cup'},
   '2026-08-08':{type:'offshore',name:'Verve Cup'},
   '2026-08-09':{type:'offshore',name:'Verve Cup'},
-
-  // MORF Open
+  '2026-08-15':{type:'offshore',name:'Chicago→Hammond'},
+  '2026-08-16':{type:'offshore',name:'Hammond→Chicago'},
+  '2026-09-04':{type:'offshore',name:'Tri-State Leg 1'},
+  '2026-09-06':{type:'offshore',name:'Bi-State / Tri-State Leg 2'},
+  '2026-09-07':{type:'offshore',name:'Tri-State Leg 3'},
   '2026-09-20':{type:'offshore',name:'MORF Open'},
-
-  // GLIOR
   '2026-09-25':{type:'offshore',name:'GLIOR'},
   '2026-09-26':{type:'offshore',name:'GLIOR'},
   '2026-09-27':{type:'offshore',name:'GLIOR'},
 };
+
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DOWS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+const seasonStart=new Date(2026,4,23),seasonEnd=new Date(2026,8,27);
 const today=new Date();today.setHours(0,0,0,0);
-const seasonStart=new Date(2026,4,1),seasonEnd=new Date(2026,8,30);
-let curYear=2026,curMonth=4;
-const selDays=new Map(),selRoles=new Set(),beerDays=new Set();  
-let activeTab='select';
+let curYear=2026,curMonth=4,crewData=[];
+
 function isoKey(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+
 function dayClass(y,m,d){
   const k=isoKey(y,m,d);
   if(events[k]) return events[k].type;
@@ -199,149 +132,135 @@ function dayClass(y,m,d){
   if(dow===2) return 'tue';
   return '';
 }
+
 function eventName(y,m,d){
   const k=isoKey(y,m,d);
   if(events[k]) return events[k].name;
   const dow=new Date(y,m,d).getDay();
   if(dow===4) return 'AYC Thu Race';
   if(dow===2) return 'Practice';
-  if(dow===6) return 'AYC Sat';
   return '';
-}function renderCal(){
+}
+
+function dayTypeName(cls){return{thu:'AYC Thu Race',tue:'Tuesday Practice',sat:'AYC Sat Race',offshore:'Offshore / Regatta'}[cls]||'';}
+function dayTypeBadge(cls){return{thu:'thu-badge',tue:'tue-badge',sat:'sat-badge',offshore:'offshore-badge'}[cls]||'';}
+
+function buildDayMap(){
+  const map={};
+  crewData.forEach(person=>{
+    if(!person.days) return;
+    person.days.split(', ').forEach(label=>{
+      label=label.trim();if(!label)return;
+      if(!map[label])map[label]={names:[],beers:[]};
+      map[label].names.push(person.name);
+      if(person.beer&&person.beer!=='None'){
+        person.beer.split(', ').forEach(b=>{if(b.trim()===label)map[label].beers.push(person.name);});
+      }
+    });
+  });
+  return map;
+}
+
+function labelForDate(y,m,d){
+  const date=new Date(y,m,d);
+  const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()];
+  return dow+' '+MONTHS[m].slice(0,3)+' '+d;
+}
+
+function renderCal(){
   const grid=document.getElementById('cal-grid');grid.innerHTML='';
   DOWS.forEach(d=>{const el=document.createElement('div');el.className='dow';el.textContent=d;grid.appendChild(el);});
   const firstDow=new Date(curYear,curMonth,1).getDay(),dim=new Date(curYear,curMonth+1,0).getDate();
+  const dayMap=buildDayMap();
   for(let i=0;i<firstDow;i++){const el=document.createElement('div');el.className='cd empty';grid.appendChild(el);}
   for(let d=1;d<=dim;d++){
-    const date=new Date(curYear,curMonth,d),k=isoKey(curYear,curMonth,d),dc=dayClass(curYear,curMonth,d);
+    const date=new Date(curYear,curMonth,d);
     const isPast=date<today,out=date<seasonStart||date>seasonEnd;
+    const dc=dayClass(curYear,curMonth,d);
+    const label=labelForDate(curYear,curMonth,d);
+    const dayInfo=dayMap[label];
     const el=document.createElement('div');
-    el.className='cd'+(dc?' '+dc:'')+(isPast||out?' past':'')+(selDays.has(k)?' selected':'');
+    el.className='cd'+(dc?' '+dc:'')+(isPast||out?' past':'')+(dayInfo?' has-crew':'');
     const num=document.createElement('div');num.className='num';num.textContent=d;el.appendChild(num);
-    if(dc){const dot=document.createElement('div');dot.className='dot';el.appendChild(dot);}
-    if(!isPast&&!out){el.onclick=()=>{if(selDays.has(k)){selDays.delete(k);el.classList.remove('selected');}else{const dn=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()];selDays.set(k,dn+' '+MONTHS[curMonth].slice(0,3)+' '+d);el.classList.add('selected');}updatePills();};}
+    if(dayInfo){
+      const cc=document.createElement('div');cc.className='crew-count';cc.textContent=dayInfo.names.length+'👤';el.appendChild(cc);
+      const tt=document.createElement('div');tt.className='tooltip';
+      const evtName=eventName(curYear,curMonth,d);
+      tt.innerHTML=(evtName?'<strong>'+evtName+'</strong><br>':'')+dayInfo.names.join('<br>')+(dayInfo.beers.length?'<br>🍺 '+dayInfo.beers.join(', '):'');
+      el.appendChild(tt);
+    }
     grid.appendChild(el);
   }
   document.getElementById('cal-title').textContent=MONTHS[curMonth]+' '+curYear;
 }
-function updatePills(){
-  const pills=document.getElementById('sel-pills');
-  pills.innerHTML='';
-  [...selDays.entries()].sort((a,b)=>a[0].localeCompare(b[0])).forEach(([k,label])=>{
-    const p=document.createElement('div');
-    p.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 8px;background:#f4f6f9;border-radius:8px;margin-bottom:5px;font-size:12px;';
-    const lbl=document.createElement('span');
-    lbl.style.cssText='flex:1;color:#222;font-weight:500;';
-    lbl.textContent=label;
-    const beerLabel=document.createElement('span');
-    beerLabel.style.cssText='font-size:11px;color:#aaa;';
-    beerLabel.textContent='Beer?';
-    const tw=document.createElement('label');
-    tw.style.cssText='position:relative;width:36px;height:20px;flex-shrink:0;';
-    const checked=beerDays.has(k);
-    tw.innerHTML='<input type="checkbox" '+(checked?'checked':'')+' style="opacity:0;width:0;height:0;position:absolute;">'
-      +'<span style="position:absolute;inset:0;background:'+(checked?'#639922':'#ddd')+';border-radius:10px;cursor:pointer;transition:background .2s;">'
-      +'<span style="position:absolute;width:14px;height:14px;left:'+(checked?'19px':'3px')+';top:3px;background:#fff;border-radius:50%;transition:left .2s;"></span>'
-      +'</span>';
-    const input=tw.querySelector('input');
-    input.onchange=()=>{
-      if(input.checked){beerDays.add(k);}else{beerDays.delete(k);}
-      updatePills();
-    };
-    const removeBtn=document.createElement('button');
-    removeBtn.textContent='×';
-    removeBtn.style.cssText='background:none;border:none;cursor:pointer;color:#aaa;font-size:15px;padding:0;line-height:1;font-weight:700;';
-    removeBtn.onclick=()=>removeDay(k);
-    p.appendChild(lbl);
-    p.appendChild(beerLabel);
-    p.appendChild(tw);
-    p.appendChild(removeBtn);
-    pills.appendChild(p);
-  });
-  const n=selDays.size;
-  document.getElementById('sel-count').textContent=n>0?n+' day'+(n>1?'s':'')+' selected':'Tap any date to add it — select as many as you like';
-  document.getElementById('day-count').textContent=n>0?'('+n+' selected)':'';
-}
-function removeDay(k){selDays.delete(k);updatePills();renderCal();}
-function changeMonth(dir){curMonth+=dir;if(curMonth>11){curMonth=0;curYear++;}if(curMonth<0){curMonth=11;curYear--;}renderCal();}
-const roles=[{name:'Skipper',desc:'Helm & tactics'},{name:'Bow person',desc:'Foredeck work'},{name:'Trimmer 1',desc:'Headsail trim'},{name:'Trimmer 2',desc:'Secondary trim'},{name:'Mainsail trimmer',desc:'Main & vang'},{name:'Rail meat',desc:'Hiking & ballast'},{name:'Mast person',desc:'Hoists & drops'},{name:'Open / any',desc:'Wherever needed'}];
-const rg=document.getElementById('roles-grid');
-roles.forEach((r,i)=>{const btn=document.createElement('button');btn.className='role-btn';btn.innerHTML='<span class="rn">'+r.name+'</span><span class="rd">'+r.desc+'</span>';btn.onclick=()=>{if(selRoles.has(i)){selRoles.delete(i);btn.classList.remove('selected');}else if(selRoles.size<3){selRoles.add(i);btn.classList.add('selected');}document.getElementById('role-hint').textContent=selRoles.size+' of 3 selected';};rg.appendChild(btn);});
-function switchTab(t){activeTab=t;document.getElementById('tab-select').style.display=t==='select'?'block':'none';document.getElementById('tab-type').style.display=t==='type'?'block':'none';document.querySelectorAll('.name-tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='select')||(i===1&&t==='type')));}
-function getName(){return activeTab==='select'?document.getElementById('name-select').value:document.getElementById('name-input').value.trim();}
-function showErr(msg){const e=document.getElementById('err-msg');e.textContent=msg;e.style.display='block';}
-function hideErr(){document.getElementById('err-msg').style.display='none';}
-function submitForm(){
-  hideErr();
-  const name=getName(),email=document.getElementById('email-input').value.trim();
-  if(!name){showErr('Please enter your name.');return;}
-  if(!email||!email.includes('@')){showErr('Please enter a valid email address.');return;}
-  if(selDays.size===0){showErr('Please select at least one day.');return;}
-  if(selRoles.size===0){showErr('Please pick at least one job preference.');return;}
-  const btn=document.getElementById('submit-btn');btn.disabled=true;
-  document.getElementById('btn-text').style.display='none';document.getElementById('spinner').style.display='block';
-  const payload={name,email,days:[...selDays.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([,l])=>l).join(', '),jobs:[...selRoles].map(i=>roles[i].name).join(', '),beer:[...beerDays].sort().filter(k=>selDays.has(k)).map(k=>selDays.get(k)).join(', ')||'None',notes:document.getElementById('notes').value.trim()};
-                 
-  fetch(SCRIPT_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)})
-    .then(()=>{document.getElementById('form-body').style.display='none';document.getElementById('success-msg').style.display='block';document.getElementById('confirm-text').innerHTML='<strong>'+name+'</strong> signed up for '+selDays.size+' day'+(selDays.size>1?'s':'')+'.<br>Jobs: '+payload.jobs+(payload.beer==='Yes'?'<br>Bringing beer!':'');})
-    .catch(()=>{showErr('Could not connect. Please try again.');btn.disabled=false;document.getElementById('btn-text').style.display='inline';document.getElementById('spinner').style.display='none';});
-}
-function resetForm(){document.getElementById('form-body').style.display='block';document.getElementById('success-msg').style.display='none';document.getElementById('name-select').value='';document.getElementById('name-input').value='';document.getElementById('email-input').value='';document.getElementById('notes').value='';document.getElementById('beer-check').checked=false;document.getElementById('submit-btn').disabled=false;document.getElementById('btn-text').style.display='inline';document.getElementById('spinner').style.display='none';selDays.clear();selRoles.clear();beerDays.clear();document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('selected'));document.getElementById('role-hint').textContent='0 of 3 selected';hideErr();updatePills();renderCal();}
-const params=new URLSearchParams(window.location.search);
-if(params.get('name')){
-  const n=params.get('name');
-  if(['Dave','Eric','Sara','Sam','Derek','Gerry','Jerry H','Dave P'].includes(n)){
-    document.getElementById('name-select').value=n;
-  } else {
-    switchTab('type');
-    document.getElementById('name-input').value=n;
-  }
-}
-if(params.get('email')) document.getElementById('email-input').value=params.get('email');
-if(params.get('notes')) document.getElementById('notes').value=params.get('notes');
 
-// Restore selected days
-if(params.get('days')){
-  const dayLabels=params.get('days').split(', ').filter(Boolean);
-  // Build a reverse map: label → ISO key
-  // We need to scan May–Sep 2026 and match labels
+function renderList(){
+  const dayMap=buildDayMap();
+  const wrap=document.getElementById('list-wrap');wrap.innerHTML='';
+  const allDays=[];
   for(let m=4;m<=8;m++){
     const dim=new Date(2026,m+1,0).getDate();
     for(let d=1;d<=dim;d++){
       const date=new Date(2026,m,d);
-      const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()];
-      const label=dow+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m]+' '+d;
-      if(dayLabels.includes(label)){
-        const k=isoKey(2026,m,d);
-        selDays.set(k,label);
-      }
+      if(date<today)continue;
+      const dc=dayClass(2026,m,d);
+      if(!dc)continue;
+      const label=labelForDate(2026,m,d);
+      const evtName=eventName(2026,m,d);
+      allDays.push({label,dc,date,evtName});
     }
   }
-}
-
-// Restore beer days
-if(params.get('beer')){
-  const beerLabels=params.get('beer').split(', ').filter(d=>d&&d!=='None');
-  [...selDays.entries()].forEach(([k,label])=>{
-    if(beerLabels.includes(label)) beerDays.add(k);
-  });
-}
-
-// Restore job roles
-if(params.get('jobs')){
-  const savedJobs=params.get('jobs').split(', ').filter(Boolean);
-  document.querySelectorAll('.role-btn').forEach((btn,i)=>{
-    const roleName=btn.querySelector('.rn').textContent;
-    if(savedJobs.includes(roleName)){
-      selRoles.add(i);
-      btn.classList.add('selected');
+  allDays.forEach(({label,dc,evtName})=>{
+    const info=dayMap[label]||{names:[],beers:[]};
+    const row=document.createElement('div');row.className='day-row';
+    const typeName=dayTypeName(dc),badgeCls=dayTypeBadge(dc);
+    row.innerHTML='<div class="day-label">'+label
+      +(evtName&&evtName!==typeName?'<span class="day-event">'+evtName+'</span>':'')
+      +(typeName?'<span class="day-type '+badgeCls+'">'+typeName+'</span>':'')
+      +'</div>';
+    const chips=document.createElement('div');chips.className='crew-chips';
+    if(info.names.length===0){
+      chips.innerHTML='<span class="empty-day">No one signed up yet</span>';
+    } else {
+      info.names.forEach(name=>{
+        const chip=document.createElement('div');chip.className='chip';
+        chip.textContent=name+(info.beers.includes(name)?' 🍺':'');
+        chips.appendChild(chip);
+      });
     }
+    row.appendChild(chips);
+    wrap.appendChild(row);
   });
-  document.getElementById('role-hint').textContent=selRoles.size+' of 3 selected';
 }
 
-renderCal();
-updatePills();
+function showTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='calendar')||(i===1&&t==='list')));
+  document.getElementById('calendar-view').style.display=t==='calendar'?'block':'none';
+  document.getElementById('list-view').style.display=t==='list'?'block':'none';
+}
+
+function changeMonth(dir){
+  curMonth+=dir;
+  if(curMonth>11){curMonth=0;curYear++;}
+  if(curMonth<0){curMonth=11;curYear--;}
+  renderCal();
+}
+
+fetch(SCRIPT_URL+'?action=crew',{redirect:'follow'})
+  .then(r=>r.json())
+  .then(data=>{
+    crewData=data.crew||[];
+    document.getElementById('cal-loading').style.display='none';
+    document.getElementById('list-loading').style.display='none';
+    document.getElementById('cal-wrap').style.display='block';
+    document.getElementById('list-wrap').style.display='block';
+    renderCal();
+    renderList();
+  })
+  .catch(()=>{
+    document.getElementById('cal-loading').textContent='Could not load schedule. Try refreshing.';
+    document.getElementById('list-loading').textContent='Could not load schedule. Try refreshing.';
+  });
 </script>
 </body>
 </html>
