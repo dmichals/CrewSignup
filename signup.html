@@ -191,8 +191,23 @@ let curYear=2026,curMonth=4;
 const selDays=new Map(),selRoles=new Set(),beerDays=new Set();  
 let activeTab='select';
 function isoKey(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
-function dayClass(y,m,d){const k=isoKey(y,m,d);if(regattas[k])return 'regatta';const dow=new Date(y,m,d).getDay();if(dow===4)return 'thu';if(dow===2)return 'tue';if(dow===3)return 'wed';return '';}
-function renderCal(){
+function dayClass(y,m,d){
+  const k=isoKey(y,m,d);
+  if(events[k]) return events[k].type;
+  const dow=new Date(y,m,d).getDay();
+  if(dow===4) return 'thu';
+  if(dow===2) return 'tue';
+  return '';
+}
+function eventName(y,m,d){
+  const k=isoKey(y,m,d);
+  if(events[k]) return events[k].name;
+  const dow=new Date(y,m,d).getDay();
+  if(dow===4) return 'AYC Thu Race';
+  if(dow===2) return 'Practice';
+  if(dow===6) return 'AYC Sat';
+  return '';
+}function renderCal(){
   const grid=document.getElementById('cal-grid');grid.innerHTML='';
   DOWS.forEach(d=>{const el=document.createElement('div');el.className='dow';el.textContent=d;grid.appendChild(el);});
   const firstDow=new Date(curYear,curMonth,1).getDay(),dim=new Date(curYear,curMonth+1,0).getDate();
