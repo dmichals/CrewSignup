@@ -139,7 +139,23 @@ const today=new Date();today.setHours(0,0,0,0);
 let crewData=[];
 
 function isoKey(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
-function dayClass(y,m,d){const k=isoKey(y,m,d);if(regattas[k])return 'regatta';const dow=new Date(y,m,d).getDay();if(dow===4)return 'thu';if(dow===2)return 'tue';if(dow===3)return 'wed';return '';}
+function dayClass(y,m,d){
+  const k=isoKey(y,m,d);
+  if(events[k]) return events[k].type;
+  const dow=new Date(y,m,d).getDay();
+  if(dow===4) return 'thu';
+  if(dow===2) return 'tue';
+  return '';
+}
+function eventName(y,m,d){
+  const k=isoKey(y,m,d);
+  if(events[k]) return events[k].name;
+  const dow=new Date(y,m,d).getDay();
+  if(dow===4) return 'AYC Thu Race';
+  if(dow===2) return 'Practice';
+  if(dow===6) return 'AYC Sat';
+  return '';
+}
 function dayTypeName(cls){return{thu:'Race Thursday',tue:'Practice Tuesday',wed:'Wednesday Sail',regatta:'Regatta'}[cls]||'';}
 function labelForDate(y,m,d){const date=new Date(y,m,d);const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()];return dow+' '+MONTHS[m].slice(0,3)+' '+d;}
 
