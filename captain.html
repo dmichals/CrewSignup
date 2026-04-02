@@ -90,7 +90,51 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycby9GNQAD00GQRyF0qPW-MRMc1V2rSAKmRizHPbjGbU6jqAqCwcNWSigCMmsxsifq6Rwcw/exec';
 const CAPTAIN_KEY='sailingwithattitude2026';
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-const regattas={'2026-06-14':'LMSS DH','2026-06-15':'LMSS DH','2026-08-09':'Sunfish Nat','2026-08-10':'Sunfish Nat'};
+const events={
+  // Saturdays
+  '2026-06-06':{type:'sat',name:'AYC Sat'},
+  '2026-07-11':{type:'sat',name:'AYC Sat'},
+  '2026-08-01':{type:'sat',name:'AYC Sat'},
+  '2026-09-05':{type:'sat',name:'AYC Sat'},
+
+  // Spring Opener
+  '2026-05-23':{type:'offshore',name:'Spring Opener'},
+  '2026-05-24':{type:'offshore',name:'Spring Opener'},
+
+  // Chicago-Waukegan offshore
+  '2026-06-20':{type:'offshore',name:'Chicago→Waukegan'},
+  '2026-06-21':{type:'offshore',name:'Waukegan→Chicago'},
+
+  // Chicago-Hammond offshore
+  '2026-08-15':{type:'offshore',name:'Chicago→Hammond'},
+  '2026-08-16':{type:'offshore',name:'Hammond→Chicago'},
+
+  // Tri-State / Bi-State
+  '2026-09-04':{type:'offshore',name:'Tri-State Leg 1'},
+  '2026-09-06':{type:'offshore',name:'Bi-State / Tri-State Leg 2'},
+  '2026-09-07':{type:'offshore',name:'Tri-State Leg 3'},
+
+  // Helly Hansen
+  '2026-06-05':{type:'offshore',name:'Helly Hansen'},
+  '2026-06-06':{type:'offshore',name:'Helly Hansen'},
+  '2026-06-07':{type:'offshore',name:'Helly Hansen'},
+
+  // Race to Mackinac
+  '2026-07-11':{type:'offshore',name:'Race to Mac'},
+
+  // CYC Verve Cup
+  '2026-08-07':{type:'offshore',name:'Verve Cup'},
+  '2026-08-08':{type:'offshore',name:'Verve Cup'},
+  '2026-08-09':{type:'offshore',name:'Verve Cup'},
+
+  // MORF Open
+  '2026-09-20':{type:'offshore',name:'MORF Open'},
+
+  // GLIOR
+  '2026-09-25':{type:'offshore',name:'GLIOR'},
+  '2026-09-26':{type:'offshore',name:'GLIOR'},
+  '2026-09-27':{type:'offshore',name:'GLIOR'},
+};
 const today=new Date();today.setHours(0,0,0,0);
 let crewData=[];
 
