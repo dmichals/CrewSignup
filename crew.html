@@ -22,9 +22,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .dow{font-size:10px;color:#aaa;text-align:center;padding:3px 0;font-weight:600;}
 .cd{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;font-size:12px;position:relative;cursor:pointer;border:1px solid transparent;}
 .cd.empty,.cd.past{opacity:.25;pointer-events:none;}
-.cd.thu{background:#E6F1FB;}.cd.tue{background:#EAF3DE;}.cd.wed{background:#F0EEFF;}.cd.regatta{background:#FAEEDA;}
+.cd.thu{background:#E6F1FB;}
+.cd.tue{background:#EAF3DE;}
+.cd.sat{background:#FDE8F5;}
+.cd.offshore{background:#FAEEDA;}
 .cd.has-crew{border-width:2px;}
-.cd.thu.has-crew{border-color:#378ADD;}.cd.tue.has-crew{border-color:#639922;}.cd.wed.has-crew{border-color:#7F77DD;}.cd.regatta.has-crew{border-color:#BA7517;}
+.cd.thu.has-crew{border-color:#378ADD;}
+.cd.tue.has-crew{border-color:#639922;}
+.cd.sat.has-crew{border-color:#B94FAA;}
+.cd.offshore.has-crew{border-color:#BA7517;}
 .num{font-size:12px;font-weight:600;color:#222;line-height:1;}
 .crew-count{font-size:9px;color:#555;margin-top:2px;}
 .tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#222;color:#fff;font-size:11px;padding:6px 10px;border-radius:8px;white-space:nowrap;z-index:10;pointer-events:none;min-width:80px;text-align:center;}
@@ -34,17 +40,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .legend i{width:8px;height:8px;border-radius:2px;display:inline-block;}
 .day-row{padding:12px 0;border-bottom:1px solid #f0f0f0;}
 .day-row:last-child{border-bottom:none;}
-.day-label{font-size:13px;font-weight:600;color:#222;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.day-label{font-size:13px;font-weight:600;color:#222;margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.day-event{font-size:10px;color:#666;font-style:italic;}
 .day-type{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600;}
 .thu-badge{background:#E6F1FB;color:#185FA5;}
 .tue-badge{background:#EAF3DE;color:#3B6D11;}
-.wed-badge{background:#F0EEFF;color:#5B52C4;}
-.regatta-badge{background:#FAEEDA;color:#8A5010;}
-.crew-chips{display:flex;flex-wrap:wrap;gap:5px;}
+.sat-badge{background:#FDE8F5;color:#8A2080;}
+.offshore-badge{background:#FAEEDA;color:#8A5010;}
+.crew-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
 .chip{background:#f4f6f9;border-radius:12px;padding:3px 10px;font-size:12px;color:#444;}
 .empty-day{font-size:12px;color:#aaa;font-style:italic;}
 .loading{padding:40px;text-align:center;color:#aaa;font-size:14px;}
-.signup-btn{display:block;margin:16px 20px;padding:12px;background:#185FA5;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;}
+.signup-btn{display:block;margin:0 20px 20px;padding:12px;background:#185FA5;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;text-decoration:none;}
 </style>
 </head>
 <body>
@@ -67,10 +74,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
       <div class="cal-grid" id="cal-grid"></div>
       <div class="legend">
-        <span><i style="background:#E6F1FB;border:1px solid #378ADD;"></i>Race Thu</span>
-        <span><i style="background:#EAF3DE;border:1px solid #639922;"></i>Practice Tue</span>
-        <span><i style="background:#F0EEFF;border:1px solid #7F77DD;"></i>Wed sail</span>
-        <span><i style="background:#FAEEDA;border:1px solid #BA7517;"></i>Regatta</span>
+        <span><i style="background:#E6F1FB;border:1px solid #378ADD;"></i>Thu Race</span>
+        <span><i style="background:#EAF3DE;border:1px solid #639922;"></i>Tue Practice</span>
+        <span><i style="background:#FDE8F5;border:1px solid #B94FAA;"></i>Sat Race</span>
+        <span><i style="background:#FAEEDA;border:1px solid #BA7517;"></i>Offshore/Regatta</span>
       </div>
     </div>
   </div>
@@ -81,59 +88,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <a href="signup.html" class="signup-btn">Sign up / update my availability</a>
 </div>
 <script>
-const SCRIPT_URL='https://script.google.com/macros/s/AKfycby9GNQAD00GQRyF0qPW-MRMc1V2rSAKmRizHPbjGbU6jqAqCwcNWSigCMmsxsifq6Rwcw/exec';
-const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-const DOWS=['Su','Mo','Tu','We','Th','Fr','Sa'];
-const events={
-  // Saturdays
-  '2026-06-06':{type:'sat',name:'AYC Sat'},
-  '2026-07-11':{type:'sat',name:'AYC Sat'},
-  '2026-08-01':{type:'sat',name:'AYC Sat'},
-  '2026-09-05':{type:'sat',name:'AYC Sat'},
+const SCRIPT_URL='YOUR_APPS_SCRIPT_URL_HERE';
 
-  // Spring Opener
+const events={
+  '2026-06-06':{type:'sat',name:'AYC Sat Race'},
+  '2026-07-11':{type:'sat',name:'AYC Sat Race'},
+  '2026-08-01':{type:'sat',name:'AYC Sat Race'},
+  '2026-09-05':{type:'sat',name:'AYC Sat Race'},
   '2026-05-23':{type:'offshore',name:'Spring Opener'},
   '2026-05-24':{type:'offshore',name:'Spring Opener'},
-
-  // Chicago-Waukegan offshore
+  '2026-06-05':{type:'offshore',name:'Helly Hansen'},
+  '2026-06-07':{type:'offshore',name:'Helly Hansen'},
   '2026-06-20':{type:'offshore',name:'Chicago→Waukegan'},
   '2026-06-21':{type:'offshore',name:'Waukegan→Chicago'},
-
-  // Chicago-Hammond offshore
-  '2026-08-15':{type:'offshore',name:'Chicago→Hammond'},
-  '2026-08-16':{type:'offshore',name:'Hammond→Chicago'},
-
-  // Tri-State / Bi-State
-  '2026-09-04':{type:'offshore',name:'Tri-State Leg 1'},
-  '2026-09-06':{type:'offshore',name:'Bi-State / Tri-State Leg 2'},
-  '2026-09-07':{type:'offshore',name:'Tri-State Leg 3'},
-
-  // Helly Hansen
-  '2026-06-05':{type:'offshore',name:'Helly Hansen'},
-  '2026-06-06':{type:'offshore',name:'Helly Hansen'},
-  '2026-06-07':{type:'offshore',name:'Helly Hansen'},
-
-  // Race to Mackinac
   '2026-07-11':{type:'offshore',name:'Race to Mac'},
-
-  // CYC Verve Cup
   '2026-08-07':{type:'offshore',name:'Verve Cup'},
   '2026-08-08':{type:'offshore',name:'Verve Cup'},
   '2026-08-09':{type:'offshore',name:'Verve Cup'},
-
-  // MORF Open
+  '2026-08-15':{type:'offshore',name:'Chicago→Hammond'},
+  '2026-08-16':{type:'offshore',name:'Hammond→Chicago'},
+  '2026-09-04':{type:'offshore',name:'Tri-State Leg 1'},
+  '2026-09-06':{type:'offshore',name:'Bi-State / Tri-State Leg 2'},
+  '2026-09-07':{type:'offshore',name:'Tri-State Leg 3'},
   '2026-09-20':{type:'offshore',name:'MORF Open'},
-
-  // GLIOR
   '2026-09-25':{type:'offshore',name:'GLIOR'},
   '2026-09-26':{type:'offshore',name:'GLIOR'},
   '2026-09-27':{type:'offshore',name:'GLIOR'},
 };
-const seasonStart=new Date(2026,4,1),seasonEnd=new Date(2026,8,30);
+
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOWS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+const seasonStart=new Date(2026,4,23),seasonEnd=new Date(2026,8,27);
 const today=new Date();today.setHours(0,0,0,0);
 let curYear=2026,curMonth=4,crewData=[];
 
 function isoKey(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+
 function dayClass(y,m,d){
   const k=isoKey(y,m,d);
   if(events[k]) return events[k].type;
@@ -142,28 +132,29 @@ function dayClass(y,m,d){
   if(dow===2) return 'tue';
   return '';
 }
+
 function eventName(y,m,d){
   const k=isoKey(y,m,d);
   if(events[k]) return events[k].name;
   const dow=new Date(y,m,d).getDay();
   if(dow===4) return 'AYC Thu Race';
   if(dow===2) return 'Practice';
-  if(dow===6) return 'AYC Sat';
   return '';
-}function dayTypeName(cls){return{thu:'Race Thursday',tue:'Practice Tuesday',wed:'Wednesday Sail',regatta:'Regatta'}[cls]||'';}
-function dayTypeBadge(cls){return{thu:'thu-badge',tue:'tue-badge',wed:'wed-badge',regatta:'regatta-badge'}[cls]||'';}
+}
+
+function dayTypeName(cls){return{thu:'AYC Thu Race',tue:'Tuesday Practice',sat:'AYC Sat Race',offshore:'Offshore / Regatta'}[cls]||'';}
+function dayTypeBadge(cls){return{thu:'thu-badge',tue:'tue-badge',sat:'sat-badge',offshore:'offshore-badge'}[cls]||'';}
 
 function buildDayMap(){
   const map={};
   crewData.forEach(person=>{
     if(!person.days) return;
     person.days.split(', ').forEach(label=>{
-      label=label.trim();
-      if(!label) return;
-      if(!map[label]) map[label]={names:[],beers:[]};
+      label=label.trim();if(!label)return;
+      if(!map[label])map[label]={names:[],beers:[]};
       map[label].names.push(person.name);
-      if(person.beer && person.beer!=='None'){
-        person.beer.split(', ').forEach(b=>{if(b.trim()===label) map[label].beers.push(person.name);});
+      if(person.beer&&person.beer!=='None'){
+        person.beer.split(', ').forEach(b=>{if(b.trim()===label)map[label].beers.push(person.name);});
       }
     });
   });
@@ -194,7 +185,8 @@ function renderCal(){
     if(dayInfo){
       const cc=document.createElement('div');cc.className='crew-count';cc.textContent=dayInfo.names.length+'👤';el.appendChild(cc);
       const tt=document.createElement('div');tt.className='tooltip';
-      tt.innerHTML=dayInfo.names.join('<br>')+(dayInfo.beers.length?'<br>🍺 '+dayInfo.beers.join(', '):'');
+      const evtName=eventName(curYear,curMonth,d);
+      tt.innerHTML=(evtName?'<strong>'+evtName+'</strong><br>':'')+dayInfo.names.join('<br>')+(dayInfo.beers.length?'<br>🍺 '+dayInfo.beers.join(', '):'');
       el.appendChild(tt);
     }
     grid.appendChild(el);
@@ -205,24 +197,27 @@ function renderCal(){
 function renderList(){
   const dayMap=buildDayMap();
   const wrap=document.getElementById('list-wrap');wrap.innerHTML='';
-  // Build sorted list of all sailing days in season
   const allDays=[];
   for(let m=4;m<=8;m++){
     const dim=new Date(2026,m+1,0).getDate();
     for(let d=1;d<=dim;d++){
       const date=new Date(2026,m,d);
-      if(date<today) continue;
+      if(date<today)continue;
       const dc=dayClass(2026,m,d);
-      if(!dc) continue;
+      if(!dc)continue;
       const label=labelForDate(2026,m,d);
-      allDays.push({label,dc,date});
+      const evtName=eventName(2026,m,d);
+      allDays.push({label,dc,date,evtName});
     }
   }
-  allDays.forEach(({label,dc})=>{
+  allDays.forEach(({label,dc,evtName})=>{
     const info=dayMap[label]||{names:[],beers:[]};
     const row=document.createElement('div');row.className='day-row';
     const typeName=dayTypeName(dc),badgeCls=dayTypeBadge(dc);
-    row.innerHTML='<div class="day-label">'+label+(typeName?'<span class="day-type '+badgeCls+'">'+typeName+'</span>':'')+'</div>';
+    row.innerHTML='<div class="day-label">'+label
+      +(evtName&&evtName!==typeName?'<span class="day-event">'+evtName+'</span>':'')
+      +(typeName?'<span class="day-type '+badgeCls+'">'+typeName+'</span>':'')
+      +'</div>';
     const chips=document.createElement('div');chips.className='crew-chips';
     if(info.names.length===0){
       chips.innerHTML='<span class="empty-day">No one signed up yet</span>';
@@ -251,7 +246,7 @@ function changeMonth(dir){
   renderCal();
 }
 
-fetch(SCRIPT_URL+'?action=crew', {redirect: 'follow'})  
+fetch(SCRIPT_URL+'?action=crew',{redirect:'follow'})
   .then(r=>r.json())
   .then(data=>{
     crewData=data.crew||[];
