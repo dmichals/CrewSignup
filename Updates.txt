@@ -13,3 +13,6 @@ Is there a captens view?
 Update the days for 2026
 
 Add a Pit person
+
+
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycby9GNQAD00GQRyF0qPW-MRMc1V2rSAKmRizHPbjGbU6jqAqCwcNWSigCMmsxsifq6Rwcw/exec';
